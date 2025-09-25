@@ -23,6 +23,7 @@ const Players = {
 const Controller = {
   playerTurn: Players.player1,
   displayController() {
+    console.clear();
     Gameboard.initGameboard();
     this.playGame();
   },
@@ -34,7 +35,7 @@ const Controller = {
   },
   displayWinner() {
     console.log(
-      `Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`
+      `Winner is ${this.playerTurn.name} (${this.playerTurn.choice})\nGame-Over`
     );
   },
   turnToggler() {
@@ -50,13 +51,24 @@ const Controller = {
     let row;
     let col;
     do {
-      row = prompt("Enter row index", 1);
-      col = prompt("Enter col index", 1);
-    } while (this.cellOccupied(row, col));
+      row = parseInt(prompt("Enter row index [0, 1 or 2]", 1));
+      col = parseInt(prompt("Enter col index [0, 1 or 2]", 1));
+      if (!row || !col) break;
+    } while (this.isInValidIndex(row, col) || this.cellOccupied(row, col));
 
     Gameboard.populateBoard(this.playerTurn, { row, col });
     console.log("Player1");
     console.table(Gameboard.getGameBoard());
+  },
+  isInValidIndex(row, col) {
+    return (
+      Number.isNaN(row) ||
+      Number.isNaN(col) ||
+      row < 0 ||
+      row > 2 ||
+      col < 0 ||
+      col > 2
+    );
   },
   getPlayer2Choice() {
     let row;
