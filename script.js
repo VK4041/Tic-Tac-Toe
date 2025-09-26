@@ -42,7 +42,7 @@ const Controller = {
     this.displayWinner();
   },
   checkDraw() {
-    return this.roundCount === 5;
+    return this.roundCount === 5 && !this.winCondition();
   },
   displayWinner() {
     if (this.checkDraw()) {
@@ -54,8 +54,7 @@ const Controller = {
       );
     }
     console.log(
-      `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} |
-       ${Players.player2.name} = ${Players.player2.score}`
+      `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} | ${Players.player2.name} = ${Players.player2.score}`
     );
     //Reset game
     this.playerTurn = Players.player1;
