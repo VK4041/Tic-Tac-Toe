@@ -4,12 +4,12 @@ const Gameboard = {
     for (let i = 0; i < 3; i++) {
       this.gameboard.push([]);
       for (let j = 0; j < 3; j++) {
-        this.gameboard[i].push("");
+        this.gameboard[i].push("X");
       }
     }
   },
   resetGameboard() {
-    this.gameboard = [];
+    this.gameboard = null;
   },
   getGameBoard() {
     return this.gameboard;
@@ -23,17 +23,44 @@ const Players = {
   player1: { choice: "O", name: "Player1", score: 0 },
   player2: { choice: "X", name: "Player2", score: 0 },
 };
+const displayController = {
+  initUIBoard() {
+    let container = document.querySelector(".container");
+    let boardNode = document.createElement("div");
+    boardNode.classList.add("board");
+    Gameboard.getGameBoard().forEach((row, i) => {
+      let rowNode = document.createElement("div");
+      rowNode.classList.add("row");
+      row.forEach((cell, j) => {
+        let cellNode = document.createElement("div");
+        cellNode.classList.add("cell");
+        cellNode.setAttribute("data-row", i);
+        cellNode.setAttribute("data-col", j);
+        cellNode.textContent = cell;
+        rowNode.appendChild(cellNode);
+      });
+      boardNode.appendChild(rowNode);
+    });
+    container.appendChild(boardNode);
+  },
+  resetUIBoard() {
+    let rows = document.querySelectorAll(".row");
+    rows.forEach((row) => {
+      row.childNodes.forEach((cell) => {
+        cell.textContent = "";
+      });
+    });
+  },
+};
 const Controller = {
   playerTurn: Players.player1,
   roundCount: 0,
   startGame() {
-    console.clear();
+    // console.clear();
     Gameboard.initGameboard();
+    displayController.initUIBoard();
     this.playGame();
   },
-  //   displayController() {
-  //     //Use for DOM content
-  //   },
   playGame() {
     while (this.roundCount < 3 || !this.winCondition()) {
       if (this.checkDraw()) break;
@@ -157,3 +184,5 @@ const Controller = {
     return !!Gameboard.getGameBoard()[row][col];
   },
 };
+Gameboard.initGameboard();
+displayController.initUIBoard();

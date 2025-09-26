@@ -1,0 +1,30 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+body {
+  height: 100vh;
+}
+.container {
+  height: 100%;
+  background-color: rgb(152, 152, 89);
+  display: flex;
+}
+.board,
+.row,
+.cell {
+  border: 1px solid black;
+}
+.board {
+  margin: auto;
+  height: 400px;
+  width: 400px;
+}
+.row {
+  display: flex;
+  height: 33%;
+}
+.cell {
+  width: 33%;
+}
