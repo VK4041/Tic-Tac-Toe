@@ -4,12 +4,14 @@ const Gameboard = {
     for (let i = 0; i < 3; i++) {
       this.gameboard.push([]);
       for (let j = 0; j < 3; j++) {
-        this.gameboard[i].push("X");
+        this.gameboard[i].push("");
       }
     }
   },
   resetGameboard() {
-    this.gameboard = null;
+    this.gameboard = [];
+    Controller.playerTurn = Players.player1;
+    Controller.roundCount = 0;
   },
   getGameBoard() {
     return this.gameboard;
@@ -26,6 +28,8 @@ const Players = {
 const displayController = {
   initUIBoard() {
     let container = document.querySelector(".container");
+    if (container.childElementCount)
+      container.removeChild(container.firstElementChild);
     let boardNode = document.createElement("div");
     boardNode.classList.add("board");
     Gameboard.getGameBoard().forEach((row, i) => {
@@ -36,12 +40,27 @@ const displayController = {
         cellNode.classList.add("cell");
         cellNode.setAttribute("data-row", i);
         cellNode.setAttribute("data-col", j);
-        cellNode.textContent = cell;
+        cellNode.addEventListener("click", () =>
+          displayController.clickHandler(i, j)
+        );
         rowNode.appendChild(cellNode);
       });
       boardNode.appendChild(rowNode);
     });
     container.appendChild(boardNode);
+  },
+  populateUIBoard(player, index) {
+    let cell = document.querySelector(
+      `[data-row="${index.row}"][data-col="${index.col}"]`
+    );
+    cell.textContent = player.choice;
+    console.log(cell);
+  },
+  clickHandler(row, col) {
+    console.log(`Clicked cell [${row}, ${col}]`);
+    if (!Controller.cellOccupied(row, col))
+      this.populateUIBoard(Controller.playerTurn, { row, col });
+    Controller.p1TurnOver = true;
   },
   resetUIBoard() {
     let rows = document.querySelectorAll(".row");
@@ -54,9 +73,11 @@ const displayController = {
 };
 const Controller = {
   playerTurn: Players.player1,
+  p1TurnOver: false,
   roundCount: 0,
   startGame() {
-    // console.clear();
+    console.clear();
+    Gameboard.resetGameboard();
     Gameboard.initGameboard();
     displayController.initUIBoard();
     this.playGame();
@@ -70,23 +91,6 @@ const Controller = {
   },
   checkDraw() {
     return this.roundCount === 5 && !this.winCondition();
-  },
-  displayWinner() {
-    if (this.checkDraw()) {
-      console.log("DRAW");
-    } else {
-      this.playerTurn.score++;
-      console.log(
-        `Game-Over \nThe Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`
-      );
-    }
-    console.log(
-      `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} | ${Players.player2.name} = ${Players.player2.score}`
-    );
-    //Reset game
-    this.playerTurn = Players.player1;
-    this.roundCount = 0;
-    Gameboard.resetGameboard();
   },
   turnToggler() {
     if (this.playerTurn === Players.player1) {
@@ -103,6 +107,19 @@ const Controller = {
       this.playerTurn = Players.player1;
     }
   },
+  displayWinner() {
+    if (this.checkDraw()) {
+      console.log("DRAW");
+    } else {
+      this.playerTurn.score++;
+      console.log(
+        `Game-Over \nThe Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`
+      );
+    }
+    console.log(
+      `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} | ${Players.player2.name} = ${Players.player2.score}`
+    );
+  },
   isInValidIndex(row, col) {
     return (
       Number.isNaN(row) ||
@@ -114,14 +131,20 @@ const Controller = {
     );
   },
   getPlayer1Choice() {
-    let row;
-    let col;
-    do {
-      row = parseInt(prompt("Enter row index [0, 1 or 2]", 1));
-      col = parseInt(prompt("Enter col index [0, 1 or 2]", 1));
-      if (!row || !col) break;
-    } while (this.isInValidIndex(row, col) || this.cellOccupied(row, col));
+    // let row;
+    // let col;
+    // // do {
+    // //   row = parseInt(prompt("Enter row index [0, 1 or 2]", 1));
+    // //   col = parseInt(prompt("Enter col index [0, 1 or 2]", 1));
+    // //   if (!row || !col) break;
+    // // } while (this.isInValidIndex(row, col) || this.cellOccupied(row, col));
+    // //Create random index s.t. they are not occupied already
+    // do {
+    //   row = Math.floor(Math.random() * 3);
+    //   col = Math.floor(Math.random() * 3);
+    // } while (this.cellOccupied(row, col));
     Gameboard.populateBoard(this.playerTurn, { row, col });
+    displayController.populateUIBoard(this.playerTurn, { row, col });
     console.log("Player1");
     console.table(Gameboard.getGameBoard());
     this.roundCount++;
@@ -134,8 +157,8 @@ const Controller = {
       row = Math.floor(Math.random() * 3);
       col = Math.floor(Math.random() * 3);
     } while (this.cellOccupied(row, col));
-    let player2Choice = { row, col };
-    Gameboard.populateBoard(this.playerTurn, player2Choice);
+    Gameboard.populateBoard(this.playerTurn, { row, col });
+    displayController.populateUIBoard(this.playerTurn, { row, col });
     console.log("Player2");
     console.table(Gameboard.getGameBoard());
   },
@@ -184,5 +207,3 @@ const Controller = {
     return !!Gameboard.getGameBoard()[row][col];
   },
 };
-Gameboard.initGameboard();
-displayController.initUIBoard();
