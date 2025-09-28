@@ -8,22 +8,38 @@ body {
 }
 .container {
   height: 100%;
-  background-color: rgb(152, 152, 89);
+  background-color: rgb(190, 190, 11);
   display: flex;
 }
-.board,
-.row,
+.board {
+  background-color: black;
+  border-radius: 10px;
+  padding: 5px;
+}
 .cell {
-  border: 1px solid black;
+  border: 3px solid black;
+  border-radius: 10px;
+  background-color: rgb(212, 80, 80);
+  color: yellow;
+}
+.blueCell {
+  color: blue;
+}
+.cell:hover {
+  border: 3px solid rgb(9, 255, 0);
 }
 .board {
   margin: auto;
   height: 400px;
   width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .row {
   display: flex;
   height: 33%;
+  gap: 2px;
 }
 .cell {
   width: 33%;
