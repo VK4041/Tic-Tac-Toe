@@ -11,7 +11,6 @@ const Gameboard = {
   resetGameboard() {
     this.gameboard = [];
     Controller.playerTurn = Players.player1;
-    Controller.roundCount = 0;
   },
   getGameBoard() {
     return this.gameboard;
@@ -25,17 +24,21 @@ const Players = {
   player2: { choice: "X", name: "Player2", score: 0 },
 };
 const displayController = {
+  displayContainer() {},
   initUIBoard() {
-    let container = document.querySelector(".container");
+    let gameContainer = document.querySelector(".game-container");
     let boardNode = document.createElement("div");
+    // let oldBoard = document.querySelector(".board");
+    // if (oldBoard) {
+    //   gameContainer.remove(oldBoard);
+    //   console.log(oldBoard.className);
+    // }
 
-    if (container.childElementCount)
-      container.removeChild(container.firstElementChild);
     boardNode.classList.add("board");
     Gameboard.getGameBoard().forEach((row, i) => {
       let rowNode = document.createElement("div");
       rowNode.classList.add("row");
-      row.forEach((cell, j) => {
+      row.forEach((_, j) => {
         let cellNode = document.createElement("div");
         cellNode.classList.add("cell");
         cellNode.setAttribute("data-row", i);
@@ -45,14 +48,11 @@ const displayController = {
       });
       boardNode.appendChild(rowNode);
     });
-    container.appendChild(boardNode);
+    gameContainer.appendChild(boardNode);
   },
   populateUIBoard(player, cell) {
-    // let cell = document.querySelector(
-    //   `[data-row="${index.row}"][data-col="${index.col}"]`
-    // );
     if (player === Players.player2) {
-      cell.classList.add("blueCell");
+      cell.classList.add("redText");
     }
     cell.textContent = player.choice;
   },
@@ -60,6 +60,7 @@ const displayController = {
     let cell = event.target;
     let row = cell.getAttribute("data-row");
     let col = cell.getAttribute("data-col");
+    console.log("HI");
     if (!Controller.cellOccupied(row, col)) {
       Gameboard.populateBoard(Controller.playerTurn, { row, col });
       displayController.populateUIBoard(Controller.playerTurn, cell);
@@ -88,24 +89,21 @@ const Controller = {
     console.clear();
     Gameboard.resetGameboard();
     Gameboard.initGameboard();
+    displayController.displayContainer();
     displayController.initUIBoard();
   },
   checkDraw() {
     return this.roundCount === 5;
-    //&& !this.winCondition()
   },
   turnToggler() {
-    if (this.checkDraw()) {
-      this.displayWinner();
-    }
     if (this.playerTurn === Players.player1) {
-      if (this.winCondition()) {
+      this.roundCount++;
+      if (this.winCondition() || this.checkDraw()) {
         this.displayWinner();
       }
       this.playerTurn = Players.player2;
-      this.roundCount++;
     } else {
-      if (this.winCondition()) {
+      if (this.winCondition() || this.checkDraw()) {
         this.displayWinner();
       }
       this.playerTurn = Players.player1;
@@ -115,12 +113,13 @@ const Controller = {
     if (this.checkDraw()) {
       console.log("DRAW");
     } else {
-      displayController.removeEventListeners();
       this.playerTurn.score++;
+      this.roundCount = 0;
       console.log(
         `Game-Over \nThe Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`
       );
     }
+    displayController.removeEventListeners();
     console.log(
       `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} | ${Players.player2.name} = ${Players.player2.score}`
     );
