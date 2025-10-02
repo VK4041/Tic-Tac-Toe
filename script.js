@@ -11,6 +11,8 @@ const Gameboard = {
   resetGameboard() {
     this.gameboard = [];
     Controller.playerTurn = Players.player1;
+    Controller.roundCount = 0;
+    displayController.resetResults();
   },
   getGameBoard() {
     return this.gameboard;
@@ -24,15 +26,11 @@ const Players = {
   player2: { choice: "X", name: "Player2", score: 0 },
 };
 const displayController = {
-  displayContainer() {},
   initUIBoard() {
     let gameContainer = document.querySelector(".game-container");
     let boardNode = document.createElement("div");
-    // let oldBoard = document.querySelector(".board");
-    // if (oldBoard) {
-    //   gameContainer.remove(oldBoard);
-    //   console.log(oldBoard.className);
-    // }
+    if (gameContainer.childElementCount)
+      gameContainer.removeChild(gameContainer.firstChild);
 
     boardNode.classList.add("board");
     Gameboard.getGameBoard().forEach((row, i) => {
@@ -60,7 +58,6 @@ const displayController = {
     let cell = event.target;
     let row = cell.getAttribute("data-row");
     let col = cell.getAttribute("data-col");
-    console.log("HI");
     if (!Controller.cellOccupied(row, col)) {
       Gameboard.populateBoard(Controller.playerTurn, { row, col });
       displayController.populateUIBoard(Controller.playerTurn, cell);
@@ -81,6 +78,22 @@ const displayController = {
       cell.removeEventListener("click", this.clickHandler)
     );
   },
+  showResults(results, scores) {
+    let resultsDiv = document.querySelector(".results");
+    let p1_scoreDiv = document.querySelector(".player1>.player-score");
+    let p2_scoreDiv = document.querySelector(".player2>.player-score");
+    resultsDiv.innerText = results;
+    p1_scoreDiv.textContent = p1_scoreDiv.textContent
+      .slice(0, -1)
+      .concat(scores.player1_score);
+    p2_scoreDiv.textContent = p2_scoreDiv.textContent
+      .slice(0, -1)
+      .concat(scores.player2_score);
+  },
+  resetResults() {
+    let results = document.querySelector(".results");
+    results.textContent = "";
+  },
 };
 const Controller = {
   playerTurn: Players.player1,
@@ -89,7 +102,6 @@ const Controller = {
     console.clear();
     Gameboard.resetGameboard();
     Gameboard.initGameboard();
-    displayController.displayContainer();
     displayController.initUIBoard();
   },
   checkDraw() {
@@ -110,19 +122,21 @@ const Controller = {
     }
   },
   displayWinner() {
+    let results = "Game-Over ";
+    let scores;
     if (this.checkDraw()) {
-      console.log("DRAW");
+      results += "Draw";
     } else {
       this.playerTurn.score++;
       this.roundCount = 0;
-      console.log(
-        `Game-Over \nThe Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`
-      );
+      results += `The Winner is ${this.playerTurn.name} (${this.playerTurn.choice})`;
     }
     displayController.removeEventListeners();
-    console.log(
-      `Scoreboard\n ${Players.player1.name} = ${Players.player1.score} | ${Players.player2.name} = ${Players.player2.score}`
-    );
+    scores = {
+      player1_score: Players.player1.score,
+      player2_score: Players.player2.score,
+    };
+    displayController.showResults(results, scores);
   },
   isInValidIndex(row, col) {
     return (
@@ -179,4 +193,8 @@ const Controller = {
     return !!Gameboard.getGameBoard()[row][col];
   },
 };
+//Pre-start the game
 Controller.startGame();
+let startBtn = document.querySelector(".startBtn");
+//replay game on click
+startBtn.addEventListener("click", Controller.startGame);

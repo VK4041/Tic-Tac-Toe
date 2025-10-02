@@ -16,15 +16,11 @@ body {
   gap: 1rem;
 }
 .title {
+  color: rgb(83, 7, 7);
   font-size: 3rem;
   font-weight: 900;
   margin: 1rem auto 0;
-  text-shadow: 1px 1px 5px white;
-}
-.game-container {
-  /* display: flex;
-  justify-content: space-between;
-  flex: 1; */
+  text-shadow: 1px 1px 1px white;
 }
 .board {
   background-color: black;
@@ -47,15 +43,24 @@ body {
   font-weight: 900;
   width: 20%;
   height: 300px;
-  background-color: rgb(42, 112, 224);
+  background-color: rgb(68, 68, 132);
   font-size: 2rem;
   text-align: center;
   border-radius: 5px;
   border: 3px solid black;
+  display: flex;
+  flex-direction: column;
 }
-.player-score{
+.player-score {
   text-align: left;
-  padding-left: 3rem;
+  padding-left: 5rem;
+}
+.player-choice {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  font-size: 8rem;
 }
 .startBtn {
   font-family: inherit;
@@ -66,28 +71,11 @@ body {
   font-size: 1.5rem;
   font-weight: 900;
 }
-.cell {
-  border: 3px solid black;
-  border-radius: 10px;
-  background-color: rgb(190, 172, 172);
-  color: yellow;
-}
-.cell,
-.redText,
-.player-card {
-  text-shadow: 2px 2px 2px black;
-}
 
-.redText,
-.player2 {
-  color: rgb(255, 0, 0);
-}
-.player-choice {
-  font-size: 5rem;
-}
-.cell:hover {
-  border: 3px solid rgb(9, 255, 0);
-}
+/* .cell:hover {
+  background-color: rgb(59, 167, 59);
+} */
+
 .board {
   margin: auto;
   height: 300px;
@@ -108,6 +96,32 @@ body {
   align-items: center;
   font-size: 3rem;
   font-weight: 900;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: rgb(190, 172, 172);
+  color: yellow;
+}
+.cell:hover {
+  background-color: rgb(59, 167, 59);
+}
+.cell,
+.redText,
+.player-card {
+  text-shadow: 2px 2px 2px black;
+}
+
+.redText,
+.player2 {
+  color: rgb(255, 0, 0);
+}
+.results {
+  font-size: 2rem;
+  text-align: center;
+  height: 3rem;
+  width: 100%;
+  font-weight: 900;
+  color: rgb(59, 8, 8);
+  text-shadow: 1px 1px 1px white;
 }
 .footer {
   margin-top: auto;
